@@ -32,4 +32,23 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 	};
 }
 
+const sqlForFilter = () => {
+	let minSQL;
+	let maxSQL;
+	let nameSQL;
+	let where = 'WHERE ';
+	if (query['minEmployees'] !== undefined && query['minEmployees'] !== '') {
+		minSQL = `num_employees >= ${query['minEmployees']}`;
+		where += minSQL;
+	}
+	if (query['maxEmployees'] !== undefined && query['maxEmployees'] !== '') {
+		maxSQL = `num_employees <= ${query['maxEmployees']}`;
+		minSQL ? (where += ` AND ${maxSQL}`) : (where += maxSQL);
+	}
+	if (query['nameLike'] !== undefined && query['nameLike'] !== '') {
+		nameSQL = `name ILIKE '%${query['nameLike']}%'`;
+		minSQL || maxSQL ? (where += ` AND ${nameSQL}`) : (where += nameSQL);
+	}
+};
+
 module.exports = { sqlForPartialUpdate };

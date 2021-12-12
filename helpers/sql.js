@@ -32,23 +32,46 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 	};
 }
 
-const sqlForFilter = () => {
+/*
+* Checks for valid query strings: minEmployees, maxEmployees, nameLike
+* If valid queries: returns the appropriate SQL WHERE clause and an array of values:
+
+    For query = {minEmployees: 5, maxEmployees: 10, nameLike: 'IBM'}
+    filter = 'WHERE minEmployees=$1 AND maxEmployees=$2 AND nameLike=$3'
+    values = [5, 10, 'IBM']
+    
+    returning { 'WHERE minEmployees=$1 AND maxEmployees=$2 AND nameLike=$3',
+                [5, 10, 'IBM'] }
+
+    If there is no valid query:
+    returning {'', []}
+*/
+
+const sqlForFilter = (query) => {
 	let minSQL;
 	let maxSQL;
 	let nameSQL;
-	let where = 'WHERE ';
+	let filter = 'WHERE ';
+	const values = [];
+	let idx = 0;
 	if (query['minEmployees'] !== undefined && query['minEmployees'] !== '') {
-		minSQL = `num_employees >= ${query['minEmployees']}`;
-		where += minSQL;
+		minSQL = `num_employees >= $${++idx}`;
+		filter += minSQL;
+		values.push(query['minEmployees']);
 	}
 	if (query['maxEmployees'] !== undefined && query['maxEmployees'] !== '') {
-		maxSQL = `num_employees <= ${query['maxEmployees']}`;
-		minSQL ? (where += ` AND ${maxSQL}`) : (where += maxSQL);
+		maxSQL = `num_employees <= $${++idx}`;
+		minSQL ? (filter += ` AND ${maxSQL}`) : (filter += maxSQL);
+		values.push(query['maxEmployees']);
 	}
 	if (query['nameLike'] !== undefined && query['nameLike'] !== '') {
-		nameSQL = `name ILIKE '%${query['nameLike']}%'`;
-		minSQL || maxSQL ? (where += ` AND ${nameSQL}`) : (where += nameSQL);
+		nameSQL = `name ILIKE $${++idx}`;
+		minSQL || maxSQL ? (filter += ` AND ${nameSQL}`) : (filter += nameSQL);
+		values.push(`%${query['nameLike']}%`);
 	}
+
+	if (values.length === 0) filter = '';
+	return { filter, values };
 };
 
-module.exports = { sqlForPartialUpdate };
+module.exports = { sqlForPartialUpdate, sqlForFilter };

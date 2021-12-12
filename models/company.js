@@ -2,7 +2,7 @@
 
 const db = require('../db');
 const { BadRequestError, NotFoundError } = require('../expressError');
-const { sqlForPartialUpdate } = require('../helpers/sql');
+const { sqlForPartialUpdate, sqlForFilter } = require('../helpers/sql');
 
 /** Related functions for companies. */
 
@@ -45,23 +45,7 @@ class Company {
    * */
 
 	static async findAll(query) {
-		let minSQL;
-		let maxSQL;
-		let nameSQL;
-		let where = 'WHERE ';
-		if (query['minEmployees'] !== undefined && query['minEmployees'] !== '') {
-			minSQL = `num_employees >= ${query['minEmployees']}`;
-			where += minSQL;
-		}
-		if (query['maxEmployees'] !== undefined && query['maxEmployees'] !== '') {
-			maxSQL = `num_employees <= ${query['maxEmployees']}`;
-			minSQL ? (where += ` AND ${maxSQL}`) : (where += maxSQL);
-		}
-		if (query['nameLike'] !== undefined && query['nameLike'] !== '') {
-			nameSQL = `name ILIKE '%${query['nameLike']}%'`;
-			minSQL || maxSQL ? (where += ` AND ${nameSQL}`) : (where += nameSQL);
-		}
-		if (where === 'WHERE ') where = '';
+		const { filter, values } = sqlForFilter(query);
 
 		const companiesRes = await db.query(
 			`SELECT handle,
@@ -70,7 +54,9 @@ class Company {
                   num_employees AS "numEmployees",
                   logo_url AS "logoUrl"
            FROM companies
-           ORDER BY name`
+           ${filter}
+           ORDER BY name`,
+			[ ...values ]
 		);
 		return companiesRes.rows;
 	}

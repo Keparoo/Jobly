@@ -42,7 +42,20 @@ class Company {
 	/** Find all companies.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
-   * */
+   * 
+   * Accepts the following optional query strings that will filter results:
+   *    minEmployees: <integer>, maxEmployees: <integer>, nameLike: <string>
+   * 
+   *    Results will be filtered by:
+   *        companies with num_employees >= minEmployees
+   *        companies with num_employees <= maxEmployees
+   *        companies with nameLike somewhere in the name (case insensitive)
+   * 
+   *    None, 1, 2 or all 3 three query strings may be used in a single query
+   *    The queries will be combined with an AND
+   *    Invalid query strings will be ignored.
+   * 
+   **/
 
 	static async findAll(query) {
 		const { filter, values } = sqlForFilter(query);

@@ -54,6 +54,7 @@ const sqlForFilter = (query) => {
 	let filter = 'WHERE ';
 	const values = [];
 	let idx = 0;
+
 	if (query['minEmployees'] !== undefined && query['minEmployees'] !== '') {
 		minSQL = `num_employees >= $${++idx}`;
 		filter += minSQL;

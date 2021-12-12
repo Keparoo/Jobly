@@ -1,3 +1,5 @@
+'use strict';
+
 const { sqlForPartialUpdate, sqlForFilter } = require('./sql');
 const { BadRequestError } = require('../expressError');
 

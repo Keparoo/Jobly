@@ -71,6 +71,7 @@ const sqlForFilter = (query) => {
 		values.push(`%${query['nameLike']}%`);
 	}
 
+	console.log(filter, values);
 	if (values.length === 0) filter = '';
 	return { filter, values };
 };

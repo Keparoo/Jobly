@@ -55,17 +55,17 @@ const sqlForFilter = (query) => {
 	const values = [];
 	let idx = 0;
 
-	if (query['minEmployees'] !== undefined && query['minEmployees'] !== '') {
+	if (query['minEmployees'] && query['minEmployees'] !== '') {
 		minSQL = `num_employees >= $${++idx}`;
 		filter += minSQL;
 		values.push(query['minEmployees']);
 	}
-	if (query['maxEmployees'] !== undefined && query['maxEmployees'] !== '') {
+	if (query['maxEmployees'] && query['maxEmployees'] !== '') {
 		maxSQL = `num_employees <= $${++idx}`;
 		minSQL ? (filter += ` AND ${maxSQL}`) : (filter += maxSQL);
 		values.push(query['maxEmployees']);
 	}
-	if (query['nameLike'] !== undefined && query['nameLike'] !== '') {
+	if (query['nameLike'] && query['nameLike'] !== '') {
 		nameSQL = `name ILIKE $${++idx}`;
 		minSQL || maxSQL ? (filter += ` AND ${nameSQL}`) : (filter += nameSQL);
 		values.push(`%${query['nameLike']}%`);
@@ -75,4 +75,39 @@ const sqlForFilter = (query) => {
 	return { filter, values };
 };
 
-module.exports = { sqlForPartialUpdate, sqlForFilter };
+const sqlForJobFilter = (query) => {
+	let minSalarySQL;
+	let hasEquitySQL;
+	let titleSQL;
+	let filter = 'WHERE ';
+	const values = [];
+	let idx = 0;
+
+	// console.log(query);
+
+	if (query['minSalary'] && query['minSalary'] !== '') {
+		minSalarySQL = `salary >= $${++idx}`;
+		filter += minSalarySQL;
+		values.push(query['minSalary']);
+	}
+	if (query['hasEquity'] && query['hasEquity'] !== '') {
+		hasEquitySQL = `equity > $${++idx}`;
+		minSalarySQL
+			? (filter += ` AND ${hasEquitySQL}`)
+			: (filter += hasEquitySQL);
+		values.push('0.0');
+	}
+	if (query['title'] && query['title'] !== '') {
+		titleSQL = `title ILIKE $${++idx}`;
+		minSalarySQL || hasEquitySQL
+			? (filter += ` AND ${titleSQL}`)
+			: (filter += titleSQL);
+		values.push(`%${query['title']}%`);
+	}
+
+	if (values.length === 0) filter = '';
+	console.log(query, filter, values);
+	return { filter, values };
+};
+
+module.exports = { sqlForPartialUpdate, sqlForFilter, sqlForJobFilter };

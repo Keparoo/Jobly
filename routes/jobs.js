@@ -50,14 +50,17 @@ router.post('/', ensureAdmin, async function(req, res, next) {
  */
 
 router.get('/', async function(req, res, next) {
+	const query = req.query;
+	if (query.minSalary !== undefined) query.minSalary = +query.minSalary;
+	query.hasEquity = query.hasEquity === 'true';
 	try {
-		const validator = jsonschema.validate(req.query, jobSearchSchema);
+		const validator = jsonschema.validate(query, jobSearchSchema);
 		if (!validator.valid) {
 			const errs = validator.errors.map((e) => e.stack);
 			throw new BadRequestError(errs);
 		}
 
-		const jobs = await Job.findAll(req.query);
+		const jobs = await Job.findAll(query);
 		return res.json({ jobs });
 	} catch (err) {
 		return next(err);

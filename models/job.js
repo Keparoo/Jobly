@@ -4,7 +4,7 @@ const res = require('express/lib/response');
 const { RowDescriptionMessage } = require('pg-protocol/dist/messages');
 const db = require('../db');
 const { NotFoundError } = require('../expressError');
-const { sqlForPartialUpdate } = require('../helpers/sql');
+const { sqlForPartialUpdate, sqlForJobFilter } = require('../helpers/sql');
 
 /** Related functions for jobs. */
 
@@ -49,7 +49,7 @@ class Jobs {
    **/
 
 	static async findAll(query) {
-		// const { filter, values } = sqlForFilter(query);
+		const { filter, values } = sqlForJobFilter(query);
 
 		const jobsRes = await db.query(
 			`SELECT j.id,
@@ -60,9 +60,9 @@ class Jobs {
                   c.name AS "companyName"
            FROM jobs j
            LEFT JOIN companies AS c ON c.handle = j.company_handle
-           ORDER BY title`
-			//    ${filter}
-			// [ ...values ]
+           ${filter}
+           ORDER BY title`,
+			[ ...values ]
 		);
 		return jobsRes.rows;
 	}

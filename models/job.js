@@ -48,7 +48,7 @@ class Jobs {
    * 
    **/
 
-	static async findAll() {
+	static async findAll(query) {
 		// const { filter, values } = sqlForFilter(query);
 
 		const jobsRes = await db.query(

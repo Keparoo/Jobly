@@ -1,11 +1,24 @@
-# Jobly Backend
+# Jobly
+A restful API and database for tracking companies, jobs, and job applications. The backend is written in Node.js using Express. The database is using PostgreSQL.
 
-This is the Express backend for Jobly, version 2.
+## Installation and Setup  
+To install npm packages:
+```
+npm i
+```
 
-To run this:
+To run the server in producton:
+```
+npm start
+```
 
-    node server.js
-    
-To run the tests:
+To run the server in development:
+```
+npm run dev
+```
+to run the test suite:
+```
+npm test
+```
 
-    jest -i
+The development server is running on localhost:3001

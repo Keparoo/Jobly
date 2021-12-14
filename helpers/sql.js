@@ -37,11 +37,13 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 * If valid queries: returns the appropriate SQL WHERE clause and an array of values:
 
     For query = {minEmployees: 5, maxEmployees: 10, nameLike: 'IBM'}
-    filter = 'WHERE minEmployees=$1 AND maxEmployees=$2 AND nameLike=$3'
+    filter = 'WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3'
     values = [5, 10, 'IBM']
     
-    returning { 'WHERE minEmployees=$1 AND maxEmployees=$2 AND nameLike=$3',
+    returning { 'WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3',
                 [5, 10, 'IBM'] }
+
+    Query strings other than minEmployees, maxEmployees and nameLike will be ignored
 
     If there is no valid query:
     returning {'', []}
@@ -75,6 +77,23 @@ const sqlForFilter = (query) => {
 	if (values.length === 0) filter = '';
 	return { filter, values };
 };
+
+/*
+* Checks for valid query strings: minSalary, hasEquity, and title
+* If valid queries: returns the appropriate SQL WHERE clause and an array of values:
+
+    For query = {minSalary: 1000, hasEquity: true, title: 'developer'}
+    filter = 'WHERE salary >= $1 AND hasEquity > $2 AND title ILIKE $3'
+    values = [1000, '0.0', 'developer']
+    
+    returning { 'WHERE salary >= $1 AND hasEquity > $2 AND title ILIKE $3',
+                [1000, '0.0', 'developer'] }
+
+    Query strings other than minSalary, hasEquity and title will be ignored
+
+    If there is no valid query:
+    returning {'', []}
+*/
 
 const sqlForJobFilter = (query) => {
 	let minSalarySQL;

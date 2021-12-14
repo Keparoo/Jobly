@@ -197,7 +197,8 @@ describe('GET /users/:username', function() {
 				firstName: 'U1F',
 				lastName: 'U1L',
 				email: 'user1@user.com',
-				isAdmin: false
+				isAdmin: false,
+				applications: [ testJobIds[0] ]
 			}
 		});
 	});
@@ -212,7 +213,8 @@ describe('GET /users/:username', function() {
 				firstName: 'U1F',
 				lastName: 'U1L',
 				email: 'user1@user.com',
-				isAdmin: false
+				isAdmin: false,
+				applications: [ testJobIds[0] ]
 			}
 		});
 	});

@@ -75,6 +75,70 @@ describe('findAll', function() {
 			}
 		]);
 	});
+
+	test('works: by min salary', async function() {
+		let jobs = await Job.findAll({ minSalary: 3000 });
+		expect(jobs).toEqual([
+			{
+				id: testJobIds[2],
+				title: 'Job3',
+				salary: 3000,
+				equity: '0',
+				companyHandle: 'c1',
+				companyName: 'C1'
+			}
+		]);
+	});
+
+	test('works: by equity', async function() {
+		let jobs = await Job.findAll({ hasEquity: true });
+		expect(jobs).toEqual([
+			{
+				id: testJobIds[0],
+				title: 'Job1',
+				salary: 1000,
+				equity: '0.1',
+				companyHandle: 'c1',
+				companyName: 'C1'
+			},
+			{
+				id: testJobIds[1],
+				title: 'Job2',
+				salary: 2000,
+				equity: '0.2',
+				companyHandle: 'c1',
+				companyName: 'C1'
+			}
+		]);
+	});
+
+	test('works: by min salary & equity', async function() {
+		let jobs = await Job.findAll({ minSalary: 2000, hasEquity: true });
+		expect(jobs).toEqual([
+			{
+				id: testJobIds[1],
+				title: 'Job2',
+				salary: 2000,
+				equity: '0.2',
+				companyHandle: 'c1',
+				companyName: 'C1'
+			}
+		]);
+	});
+
+	test('works: by name', async function() {
+		let jobs = await Job.findAll({ title: 'ob1' });
+		expect(jobs).toEqual([
+			{
+				id: testJobIds[0],
+				title: 'Job1',
+				salary: 1000,
+				equity: '0.1',
+				companyHandle: 'c1',
+				companyName: 'C1'
+			}
+		]);
+	});
 });
 
 /************************************** get */

@@ -3,7 +3,8 @@
 const res = require('express/lib/response');
 const { RowDescriptionMessage } = require('pg-protocol/dist/messages');
 const db = require('../db');
-const { BadRequestError, NotFoundError } = require('../expressError');
+const { NotFoundError } = require('../expressError');
+const { sqlForPartialUpdate } = require('../helpers/sql');
 
 /** Related functions for jobs. */
 
@@ -55,7 +56,7 @@ class Jobs {
                   j.title,
                   j.salary,
                   j.equity,
-                  j.company_handle AS "companyHandle"
+                  j.company_handle AS "companyHandle",
                   c.name AS "companyName"
            FROM jobs j
            LEFT JOIN companies AS c ON c.handle = j.company_handle
@@ -75,12 +76,12 @@ class Jobs {
    **/
 
 	static async get(id) {
-		const companyRes = await db.query(
+		const jobRes = await db.query(
 			`SELECT j.id,
                   j.title,
                   j.salary,
-                  j.equity
-                  j.company_handle AS "companyHandle"
+                  j.equity,
+                  j.company_handle AS "companyHandle",
                   c.name,
                   c.description,
                   c.num_employees AS "numEmployees",
@@ -91,13 +92,14 @@ class Jobs {
 			[ id ]
 		);
 
-		res = companyRes.rows[0];
+		const res = jobRes.rows[0];
 		if (!res) throw new NotFoundError(`No job: ${id}`);
 
 		const job = {
 			id: res.id,
 			title: res.title,
 			salary: res.salary,
+			equity: res.equity,
 			company: {
 				handle: res.companyHandle,
 				name: res.name,
@@ -128,12 +130,12 @@ class Jobs {
 
 		const querySql = `UPDATE jobs 
                       SET ${setCols} 
-                      WHERE handle = ${handleVarIdx} 
+                      WHERE id = ${handleVarIdx} 
                       RETURNING id, 
                                 title, 
                                 salary, 
                                 equity,
-                                company_handle AS "companyHandle`;
+                                company_handle AS "companyHandle"`;
 		const result = await db.query(querySql, [ ...values, id ]);
 		const job = result.rows[0];
 

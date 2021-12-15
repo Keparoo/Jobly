@@ -33,101 +33,54 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 }
 
 /*
-* Checks for valid query strings: minEmployees, maxEmployees, nameLike
-* If valid queries: returns the appropriate SQL WHERE clause and an array of values:
+* Generates a valid WHERE clause from a query string given a jsToSql conversion object:
+        query = {key1: value1, key2: value2, key3: value3}
 
-    For query = {minEmployees: 5, maxEmployees: 10, nameLike: 'IBM'}
-    filter = 'WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3'
-    values = [5, 10, 'IBM']
+  jsToSql is an object with valid queries as keys, each with the corresponding db column name and corresponding operation:
+        jsToSql = { minEmployees: { col: 'num_employees', op: '>=' },
+                   maxEmployees: { col: 'num_employees', op: '<=' },
+                   nameLike: {col: 'name', op: 'ILIKE'} }
+
+* Checks for valid query strings from keys in jsToSql
+
+    For query = {minEmployees: 100, maxEmployees: 1000, nameLike: 'corp'}
+    filter = 'WHERE num_employees >= $1 AND num_employees > $2 AND name ILIKE $3'
+    values = [100, 1000, '%corp%']
     
-    returning { 'WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3',
-                [5, 10, 'IBM'] }
+    returning { 'WHERE num_employees >= $1 AND num_employees > $2 AND name ILIKE $3',
+                [100, 1000, '%corp%'] }
 
-    Query strings other than minEmployees, maxEmployees and nameLike will be ignored
+    Query strings not found in jsToSql will be ignored
 
     If there is no valid query:
     returning {'', []}
 */
 
-const sqlForFilter = (query) => {
-	let minSQL;
-	let maxSQL;
-	let nameSQL;
+const sqlForFilter = (query, jsToSql) => {
+	let first = true;
 	let filter = 'WHERE ';
-	const values = [];
 	let idx = 0;
+	const values = [];
 
-	if (query['minEmployees'] && query['minEmployees'] !== '') {
-		minSQL = `num_employees >= $${++idx}`;
-		filter += minSQL;
-		values.push(query['minEmployees']);
-	}
-	if (query['maxEmployees'] && query['maxEmployees'] !== '') {
-		maxSQL = `num_employees <= $${++idx}`;
-		minSQL ? (filter += ` AND ${maxSQL}`) : (filter += maxSQL);
-		values.push(query['maxEmployees']);
-	}
-	if (query['nameLike'] && query['nameLike'] !== '') {
-		nameSQL = `name ILIKE $${++idx}`;
-		minSQL || maxSQL ? (filter += ` AND ${nameSQL}`) : (filter += nameSQL);
-		values.push(`%${query['nameLike']}%`);
-	}
+	for (key in query) {
+		if (key in jsToSql) {
+			first
+				? (filter += `${jsToSql[key].col} ${jsToSql[key].op} $${++idx}`)
+				: (filter += ` AND ${jsToSql[key].col} ${jsToSql[key].op} $${++idx}`);
 
+			// Value needs to be wrapped: %value% for ILIKE pattern matching
+			if (jsToSql[key].op === 'ILIKE') query[key] = `%${query[key]}%`;
+
+			values.push(query[key]);
+			first = false;
+		}
+	}
+	if (values.length === 0) filter = '';
 	console.log(filter, values);
-	if (values.length === 0) filter = '';
 	return { filter, values };
 };
 
-/*
-* Checks for valid query strings: minSalary, hasEquity, and title
-* If valid queries: returns the appropriate SQL WHERE clause and an array of values:
-
-    For query = {minSalary: 1000, hasEquity: true, title: 'developer'}
-    filter = 'WHERE salary >= $1 AND hasEquity > $2 AND title ILIKE $3'
-    values = [1000, '0.0', 'developer']
-    
-    returning { 'WHERE salary >= $1 AND hasEquity > $2 AND title ILIKE $3',
-                [1000, '0.0', 'developer'] }
-
-    Query strings other than minSalary, hasEquity and title will be ignored
-
-    If there is no valid query:
-    returning {'', []}
-*/
-
-const sqlForJobFilter = (query) => {
-	let minSalarySQL;
-	let hasEquitySQL;
-	let titleSQL;
-	let filter = 'WHERE ';
-	const values = [];
-	let idx = 0;
-
-	// console.log(query);
-
-	if (query['minSalary'] && query['minSalary'] !== '') {
-		minSalarySQL = `salary >= $${++idx}`;
-		filter += minSalarySQL;
-		values.push(query['minSalary']);
-	}
-	if (query['hasEquity'] && query['hasEquity'] !== '') {
-		hasEquitySQL = `equity > $${++idx}`;
-		minSalarySQL
-			? (filter += ` AND ${hasEquitySQL}`)
-			: (filter += hasEquitySQL);
-		values.push('0.0');
-	}
-	if (query['title'] && query['title'] !== '') {
-		titleSQL = `title ILIKE $${++idx}`;
-		minSalarySQL || hasEquitySQL
-			? (filter += ` AND ${titleSQL}`)
-			: (filter += titleSQL);
-		values.push(`%${query['title']}%`);
-	}
-
-	if (values.length === 0) filter = '';
-	console.log(query, filter, values);
-	return { filter, values };
+module.exports = {
+	sqlForPartialUpdate,
+	sqlForFilter
 };
-
-module.exports = { sqlForPartialUpdate, sqlForFilter, sqlForJobFilter };

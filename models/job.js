@@ -4,7 +4,11 @@ const res = require('express/lib/response');
 const { RowDescriptionMessage } = require('pg-protocol/dist/messages');
 const db = require('../db');
 const { NotFoundError } = require('../expressError');
-const { sqlForPartialUpdate, sqlForJobFilter } = require('../helpers/sql');
+const {
+	sqlForPartialUpdate,
+	sqlForJobFilter,
+	sqlForFilter
+} = require('../helpers/sql');
 
 /** Related functions for jobs. */
 
@@ -49,7 +53,14 @@ class Jobs {
    **/
 
 	static async findAll(query) {
-		const { filter, values } = sqlForJobFilter(query);
+		if ('hasEquity' in query) query.hasEquity = '0.0';
+		const jsToSql = {
+			minSalary: { col: 'salary', op: '>=' },
+			hasEquity: { col: 'equity', op: '>' },
+			title: { col: 'title', op: 'ILIKE' }
+		};
+
+		const { filter, values } = sqlForFilter(query, jsToSql);
 
 		const jobsRes = await db.query(
 			`SELECT j.id,

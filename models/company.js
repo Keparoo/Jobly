@@ -58,7 +58,13 @@ class Company {
    **/
 
 	static async findAll(query) {
-		const { filter, values } = sqlForFilter(query);
+		const jsToSql = {
+			minEmployees: { col: 'num_employees', op: '>=' },
+			maxEmployees: { col: 'num_employees', op: '<=' },
+			nameLike: { col: 'name', op: 'ILIKE' }
+		};
+
+		const { filter, values } = sqlForFilter(query, jsToSql);
 
 		const companiesRes = await db.query(
 			`SELECT handle,
@@ -71,6 +77,7 @@ class Company {
            ORDER BY name`,
 			[ ...values ]
 		);
+
 		return companiesRes.rows;
 	}
 

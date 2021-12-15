@@ -1,6 +1,6 @@
 'use strict';
 
-const { sqlForPartialUpdate, sqlForFilter, sqlForJobFilter } = require('./sql');
+const { sqlForPartialUpdate, sqlForFilter } = require('./sql');
 const { BadRequestError } = require('../expressError');
 
 describe('Create SQL update string', () => {
@@ -44,14 +44,18 @@ describe('Create SQL update string', () => {
 });
 
 describe('Create Filter SQL', () => {
-	// let query;
-	// beforeEach(() => {
-	// 	query = { minEmployees: 'Aliya', maxEmployees: 32, nameLike: 'ibm' };
-	// });
+	let jsToSql;
+	beforeEach(() => {
+		jsToSql = {
+			minEmployees: { col: 'num_employees', op: '>=' },
+			maxEmployees: { col: 'num_employees', op: '<=' },
+			nameLike: { col: 'name', op: 'ILIKE' }
+		};
+	});
 
 	test('Success: 3 good query strings', function() {
 		const query = { minEmployees: 100, maxEmployees: 500, nameLike: 'ibm' };
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter:
 				'WHERE num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3',
@@ -61,7 +65,7 @@ describe('Create Filter SQL', () => {
 
 	test('Success: 2 good query strings', function() {
 		const query = { minEmployees: 100, maxEmployees: 500 };
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: 'WHERE num_employees >= $1 AND num_employees <= $2',
 			values: [ 100, 500 ]
@@ -70,7 +74,7 @@ describe('Create Filter SQL', () => {
 
 	test('Success: 1 good query strings', function() {
 		const query = { nameLike: 'ibm' };
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: 'WHERE name ILIKE $1',
 			values: [ '%ibm%' ]
@@ -79,7 +83,7 @@ describe('Create Filter SQL', () => {
 
 	test('No query strings: return empty vars', function() {
 		const query = {};
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: '',
 			values: []
@@ -88,7 +92,7 @@ describe('Create Filter SQL', () => {
 
 	test('Invalid query string: return empty vars', function() {
 		const query = { invalid: 'invalid' };
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: '',
 			values: []
@@ -103,23 +107,27 @@ describe('Create Filter SQL', () => {
 			minEmployees: 100,
 			invalid3: 'invalid3'
 		};
-		const results = sqlForFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
-			filter: 'WHERE num_employees >= $1 AND name ILIKE $2',
-			values: [ 100, '%ibm%' ]
+			filter: 'WHERE name ILIKE $1 AND num_employees >= $2',
+			values: [ '%ibm%', 100 ]
 		});
 	});
 });
 
 describe('Create Job Filter SQL', () => {
-	// let query;
-	// beforeEach(() => {
-	//     query = { minSalary: 1000, hasEquitySQL: true, title: 'job1' };
-	// });
+	let jsToSql;
+	beforeEach(() => {
+		jsToSql = {
+			minSalary: { col: 'salary', op: '>=' },
+			hasEquity: { col: 'equity', op: '>' },
+			title: { col: 'title', op: 'ILIKE' }
+		};
+	});
 
 	test('Success: 3 good query strings', function() {
-		const query = { minSalary: 1000, hasEquity: true, title: 'test' };
-		const results = sqlForJobFilter(query);
+		const query = { minSalary: 1000, hasEquity: '0.0', title: 'test' };
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: 'WHERE salary >= $1 AND equity > $2 AND title ILIKE $3',
 			values: [ 1000, '0.0', '%test%' ]
@@ -127,8 +135,8 @@ describe('Create Job Filter SQL', () => {
 	});
 
 	test('Success: 2 good query strings', function() {
-		const query = { minSalary: 1000, hasEquity: true };
-		const results = sqlForJobFilter(query);
+		const query = { minSalary: 1000, hasEquity: '0.0' };
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: 'WHERE salary >= $1 AND equity > $2',
 			values: [ 1000, '0.0' ]
@@ -137,7 +145,7 @@ describe('Create Job Filter SQL', () => {
 
 	test('Success: 1 good query strings', function() {
 		const query = { title: 'test' };
-		const results = sqlForJobFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: 'WHERE title ILIKE $1',
 			values: [ '%test%' ]
@@ -146,7 +154,7 @@ describe('Create Job Filter SQL', () => {
 
 	test('No query strings: return empty vars', function() {
 		const query = {};
-		const results = sqlForJobFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: '',
 			values: []
@@ -155,7 +163,7 @@ describe('Create Job Filter SQL', () => {
 
 	test('Invalid query string: return empty vars', function() {
 		const query = { invalid: 'invalid' };
-		const results = sqlForJobFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
 			filter: '',
 			values: []
@@ -170,10 +178,10 @@ describe('Create Job Filter SQL', () => {
 			minSalary: 1000,
 			invalid3: 'invalid3'
 		};
-		const results = sqlForJobFilter(query);
+		const results = sqlForFilter(query, jsToSql);
 		expect(results).toEqual({
-			filter: 'WHERE salary >= $1 AND title ILIKE $2',
-			values: [ 1000, '%test%' ]
+			filter: 'WHERE title ILIKE $1 AND salary >= $2',
+			values: [ '%test%', 1000 ]
 		});
 	});
 });

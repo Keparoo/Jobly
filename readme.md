@@ -98,7 +98,7 @@ To check the test-coverage of code:
 npm coverage
 ```
 
-There is currently nearly 100% testing coverage.
+There is currently 100% testing coverage.
 
 ---
 ## API

@@ -1,3 +1,5 @@
+'use strict';
+
 const { BadRequestError } = require('../expressError');
 
 /*
@@ -51,6 +53,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
                 [100, 1000, '%corp%'] }
 
     Query strings not found in jsToSql will be ignored
+    This function assumes that values assigned to valid query strings have already been validated
 
     If there is no valid query:
     returning {'', []}
@@ -62,7 +65,7 @@ const sqlForFilter = (query, jsToSql) => {
 	let idx = 0;
 	const values = [];
 
-	for (key in query) {
+	for (let key in query) {
 		if (key in jsToSql) {
 			first
 				? (filter += `${jsToSql[key].col} ${jsToSql[key].op} $${++idx}`)
@@ -72,6 +75,7 @@ const sqlForFilter = (query, jsToSql) => {
 			if (jsToSql[key].op === 'ILIKE') query[key] = `%${query[key]}%`;
 
 			values.push(query[key]);
+			// First query done, subseqent queries need an AND
 			first = false;
 		}
 	}

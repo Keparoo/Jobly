@@ -48,6 +48,7 @@ router.post('/', ensureAdmin, async function(req, res, next) {
  * - nameLike : string (will find case-insensitive, partial matches)
  * 
  * Filter queries other than the 3 above will be ignored
+ * Valid filter query values are validated by json-schema
  *
  * Authorization required: none
  */

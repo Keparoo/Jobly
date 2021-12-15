@@ -58,6 +58,12 @@ function ensureAdmin(req, res, next) {
 	}
 }
 
+/* Middleware is used to verify that the user logged in is
+* the same user account as the information being accessed
+* or the user is an amin
+* If not it raises Unauthorized
+*/
+
 function ensureCorrectUserOrAdmin(req, res, next) {
 	try {
 		const user = res.locals.user;

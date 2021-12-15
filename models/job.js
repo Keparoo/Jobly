@@ -1,14 +1,9 @@
 'use strict';
 
 const res = require('express/lib/response');
-const { RowDescriptionMessage } = require('pg-protocol/dist/messages');
 const db = require('../db');
 const { NotFoundError } = require('../expressError');
-const {
-	sqlForPartialUpdate,
-	sqlForJobFilter,
-	sqlForFilter
-} = require('../helpers/sql');
+const { sqlForPartialUpdate, sqlForFilter } = require('../helpers/sql');
 
 /** Related functions for jobs. */
 
@@ -48,12 +43,20 @@ class Jobs {
    * 
    *    None, 1, 2 or all 3 three query strings may be used in a single query
    *    The queries will be combined with an AND
-   *    Invalid query strings will be ignored.
+   *    Values of valid query strings will be validated at the route level with json-schema
+   *    jsToSql is an object listing valid query strings with an object indicating:
+   *        col: name of db column name to be filtered
+   *        op: the operation to be used in the WHERE clause to filter results
+   *    Query strings not found in jsToSql will be ignored
+   *    If no valid query string is found, the search will be done unfiltered with no WHERE clause
    * 
    **/
 
 	static async findAll(query) {
+		// value needs to change from boolean to numeric type
+		// so > '0.0' comparison can be done to show job "has equity"
 		if ('hasEquity' in query) query.hasEquity = '0.0';
+
 		const jsToSql = {
 			minSalary: { col: 'salary', op: '>=' },
 			hasEquity: { col: 'equity', op: '>' },

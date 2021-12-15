@@ -53,7 +53,12 @@ class Company {
    * 
    *    None, 1, 2 or all 3 three query strings may be used in a single query
    *    The queries will be combined with an AND
-   *    Invalid query strings will be ignored.
+   *    Values of valid query strings will be validated at the route level with json-schema
+   *    jsToSql is an object listing valid query strings with an object indicating:
+   *        col: name of db column name to be filtered
+   *        op: the operation to be used in the WHERE clause to filter results
+   *    Query strings not found in jsToSql will be ignored
+   *    If no valid query string is found, the search will be done unfiltered with no WHERE clause
    * 
    **/
 

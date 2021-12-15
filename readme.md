@@ -64,9 +64,11 @@ To run the server in producton mode:
 npm start
 ```
 ---
+
 ### Environment Variables
 Create a .env file matching the template provided in the .env.example file.  
 The SECRET_KEY= variable must be set in order to properly sign the JWTs that are used for authentication. Set this variable to a good random string. If nothing is set the config.js file falls back to a weak key suitable only for development.
+
 ---
 Authentication and Authorization
 The project maintains a users table of registered users. Two roles are used for authentication: user and admin.

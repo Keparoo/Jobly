@@ -20,7 +20,7 @@ git clone https://github.com/Keparoo/Jobly
 ```
 #### Key Dependencies
 
-* npm
+* node.js
 * postgreSQL
 * express 4.17.1
 * pg 8.3.0

@@ -40,8 +40,8 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
 
   jsToSql is an object with valid queries as keys, each with the corresponding db column name and corresponding operation:
         jsToSql = { minEmployees: { col: 'num_employees', op: '>=' },
-                   maxEmployees: { col: 'num_employees', op: '<=' },
-                   nameLike: {col: 'name', op: 'ILIKE'} }
+                    maxEmployees: { col: 'num_employees', op: '<=' },
+                    nameLike: {col: 'name', op: 'ILIKE'} }
 
 * Checks for valid query strings from keys in jsToSql
 

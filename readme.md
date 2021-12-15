@@ -97,3 +97,128 @@ There is currently nearly 100% testing coverage.
 ---
 ## API
 
+GET /companies
+* General:
+    * Returns a list of all companies in database
+    * Authorization required: none
+    * Request Arguments: Accepts 3 optional query strings to filter results:
+        * `minEmployees` (integer)
+        * `maxEmployees` (integer)
+        * `nameLike` (string) case-insensitive, will make partial matches
+    * Filter queries other than the above will be ignored
+
+```json
+{ 
+    "companies": 
+    [
+        { 
+            "handle": "ibm",
+            "name": "IBM",
+             "description": "Big Blue",
+            "numEmployees": 100000,
+            "logoUrl": "http://www.ibm.com"
+         }, ...
+    ]
+}
+```
+
+GET /companies/<handle>
+* General:
+    * Returns info on company mathching handle
+    * Authorization required: none
+    * Request arguments: None
+
+Returns:
+
+```json
+{ 
+    "company": 
+        { 
+            "handle": "ibm",
+            "name": "IBM",
+             "description": "Big Blue",
+            "numEmployees": 100000,
+            "logoUrl": "http://www.ibm.com",
+            "jobs":
+                [
+                    {
+                    "id": 1,
+                    "title": "Senior Developer",
+                    "salary": 50000,
+                    "equity": "0.2"
+                    }, ...
+                ]
+         }
+}
+```
+
+POST /companies
+* General:
+    * Posts a new company to the database
+    * Authorization required: admin
+    * Request arguments: None
+    * `name`, `handle` and `description` are required  
+
+Request Body:
+```json
+{
+    "handle": "ibm",
+    "name": "IBM",
+    "description": "Big Blue",
+    "numEmployees": 100000,
+    "logoUrl": "http://www.ibm.com"
+}
+```
+Returns:
+```json
+{
+    "company":
+    {
+        "handle": "ibm",
+        "name": "IBM",
+        "description": "Big Blue",
+        "numEmployees": 100000,
+        "logoUrl": "http://www.ibm.com"
+    }
+}
+```
+PATCH /companies/<handle>
+* General:
+    * Updates a company in the database
+    * Authorization required: admin
+    * Request arguments: None
+    * `name`, `description`, `numEmployees` and `logoUrl` may be updated
+    * one or all field may be updated in a single query
+
+Request Body (each field is optional)
+```json
+    {
+        "name": "IBM",
+        "description": "Big Blue",
+        "numEmployees": 100000,
+        "logoUrl": "http://www.ibm.com"
+    }
+```
+Returns:
+```json
+{
+    "company":
+        {
+        "name": "IBM",
+        "description": "Big Blue",
+        "numEmployees": 100000,
+        "logoUrl": "http://www.ibm.com"
+        }
+}
+```
+DELETE /companies/<handle>
+* General:
+    * Deletes a company from the database
+    * Authorization required: admin
+    * Request arguments: None
+Returns:
+```json
+{
+    "deleted: "ibm"
+}
+```

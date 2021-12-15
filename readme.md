@@ -515,6 +515,10 @@ Sample Return:
 }
 ```
 ---
+## Validation
+Validation of input data is handled by the `JSON-SCHEMA` files located in the `schema` directory.
+
+---
 ## Error Handling
 The following errors are defined and handled in the `expressError.js` file
 * ExpressError (extending Error)

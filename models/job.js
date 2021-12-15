@@ -53,9 +53,12 @@ class Jobs {
    **/
 
 	static async findAll(query) {
-		// value needs to change from boolean to numeric type
-		// so > '0.0' comparison can be done to show job "has equity"
-		if ('hasEquity' in query) query.hasEquity = '0.0';
+		// value needs to change from boolean to numeric type so
+		// hasEquity > '0.0' comparison can be done to show job "has equity"
+		// If hasEquity is false remove from query and show all jobs regardless of equity value
+		if ('hasEquity' in query && query.hasEquity) {
+			query.hasEquity = '0.0';
+		} else if (!query.hasEquity) delete query.hasEquity;
 
 		const jsToSql = {
 			minSalary: { col: 'salary', op: '>=' },

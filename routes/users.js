@@ -27,7 +27,7 @@ const router = express.Router();
  * This returns the newly created user and an authentication token for them:
  *  {user: { username, firstName, lastName, email, isAdmin }, token }
  *
- * Authorization required: login
+ * Authorization required: admin
  **/
 
 router.post('/', ensureAdmin, async function(req, res, next) {
@@ -50,7 +50,7 @@ router.post('/', ensureAdmin, async function(req, res, next) {
  *
  * Returns list of all users.
  *
- * Authorization required: login
+ * Authorization required: admin
  **/
 
 router.get('/', ensureAdmin, async function(req, res, next) {
@@ -64,9 +64,10 @@ router.get('/', ensureAdmin, async function(req, res, next) {
 
 /** GET /[username] => { user }
  *
- * Returns { username, firstName, lastName, isAdmin }
+ * Returns { username, firstName, lastName, isAdmin, jobs }
+ * where jobs is jobs:{[jobId, jobId, ...]} 
  *
- * Authorization required: login
+ * Authorization required: current logged in user or admin
  **/
 
 router.get('/:username', ensureCorrectUserOrAdmin, async function(
@@ -89,7 +90,7 @@ router.get('/:username', ensureCorrectUserOrAdmin, async function(
  *
  * Returns { username, firstName, lastName, email, isAdmin }
  *
- * Authorization required: login
+ * Authorization required: current logged in user or admin
  **/
 
 router.patch('/:username', ensureCorrectUserOrAdmin, async function(
@@ -113,7 +114,7 @@ router.patch('/:username', ensureCorrectUserOrAdmin, async function(
 
 /** DELETE /[username]  =>  { deleted: username }
  *
- * Authorization required: login
+ * Authorization required: current logged in user or admin
  **/
 
 router.delete('/:username', ensureCorrectUserOrAdmin, async function(
@@ -128,6 +129,15 @@ router.delete('/:username', ensureCorrectUserOrAdmin, async function(
 		return next(err);
 	}
 });
+
+/*
+* POST /users/username/jobs/jobId => {applied: jobId}
+*
+* This route allows a user to apply for a job posting
+*
+* Authorization: current logged in user or admin
+*
+*/
 
 router.post('/:username/jobs/:id', ensureCorrectUserOrAdmin, async function(
 	req,

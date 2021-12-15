@@ -117,7 +117,7 @@ GET /companies
     [
         { 
             "handle": "ibm",
-            "name": "IBM",
+            "name": "IBM corp",
              "description": "Big Blue",
             "numEmployees": 100000,
             "logoUrl": "http://www.ibm.com"
@@ -132,14 +132,14 @@ GET /companies/<handle>
     * Authorization required: none
     * Request arguments: None
 
-Returns:
+Sample Return:
 
 ```json
 { 
     "company": 
         { 
             "handle": "ibm",
-            "name": "IBM",
+            "name": "IBM corp",
              "description": "Big Blue",
             "numEmployees": 100000,
             "logoUrl": "http://www.ibm.com",
@@ -163,23 +163,23 @@ POST /companies
     * Request arguments: None
     * `name`, `handle` and `description` are required  
 
-Request Body:
+Sample Request Body:
 ```json
 {
     "handle": "ibm",
-    "name": "IBM",
+    "name": "IBM corp",
     "description": "Big Blue",
     "numEmployees": 100000,
     "logoUrl": "http://www.ibm.com"
 }
 ```
-Returns:
+Sample Return:
 ```json
 {
     "company":
     {
         "handle": "ibm",
-        "name": "IBM",
+        "name": "IBM corp",
         "description": "Big Blue",
         "numEmployees": 100000,
         "logoUrl": "http://www.ibm.com"
@@ -194,21 +194,21 @@ PATCH /companies/<handle>
     * `name`, `description`, `numEmployees` and `logoUrl` may be updated
     * one or all field may be updated in a single query
 
-Request Body (each field is optional)
+Sample Request Body (each field is optional)
 ```json
     {
-        "name": "IBM",
+        "name": "IBM corp",
         "description": "Big Blue",
         "numEmployees": 100000,
         "logoUrl": "http://www.ibm.com"
     }
 ```
-Returns:
+Sample Return:
 ```json
 {
     "company":
         {
-        "name": "IBM",
+        "name": "IBM corp",
         "description": "Big Blue",
         "numEmployees": 100000,
         "logoUrl": "http://www.ibm.com"
@@ -220,9 +220,253 @@ DELETE /companies/<handle>
     * Deletes a company from the database
     * Authorization required: admin
     * Request arguments: None
-Returns:
+Sample Return:
 ```json
 {
     "deleted": "ibm"
 }
 ```
+---
+GET /jobs
+* General:
+    * Returns a list of all jobs in database
+    * Authorization required: none
+    * Request Arguments: Accepts 3 optional query strings to filter results:
+        * `minSalary` (integer)
+        * `hasEquity` (boolean) true indicates equity is > '0.0'
+        * `title` (string) case-insensitive, will make partial matches
+    * Filter queries other than the above will be ignored
+
+Sample Return:
+```json
+{
+    "jobs":
+    [
+        {
+            "id": 1,
+            "title": "Senior programmer",
+            "salary": 100000,
+            "equity": "0.2",
+            "companyHandle": "ibm",
+            "companyName": "IBM corp"
+        },
+    ]
+}
+```
+
+GET /jobs/<job_id>
+* General:
+    * Returns information about the job matching job_id
+    * Authorization required: none
+
+Sample Return:
+```json
+{
+    "job":
+        {
+            "id": 1,
+            "title": "Senior programmer",
+            "salary": 100000,
+            "equity": "0.2",
+            "company": {
+                "handle": "ibm",
+                "name": "IBM corp",
+                "description": "Big Blue",
+                "numEmployees": 10000,
+                "logoUrl": "http://www.ibm.com"
+            }
+        }
+}
+```
+POST /jobs
+* General:
+    * Posts a new job to the database
+    * Authorization required: admin
+    * Request arguments: None
+    * `title` and `companyHandle` are required
+
+Sample Request Body:
+```json
+{
+    "title": "Senior developer",
+    "salary": 100000,
+    "equity": "0.2",
+    "companyHandle": "ibm"
+}
+```
+Sample Return:
+```json
+{
+    "job": {
+        "title": "Senior developer",
+        "salary": 100000,
+        "equity": "0.2",
+        "companyHandle": "ibm"
+    }
+}
+```
+PATCH /jobs/<job_id>
+* General:
+    * Updates a job in the database
+    * Authorization required: admin
+    * Request arguments: None
+    * `title`, `salary`, and `equity` may be updated
+    * one or all field may be updated in a single query
+
+Sample Request Body (each field is optional)
+```json
+{
+    "title": "Senior developer",
+    "salary": 100000,
+    "equity": "0.2"
+}
+```
+Sample Return:
+```json
+{
+    "id": 1,
+    "title": "Senior developer",
+    "salary": 100000,
+    "equity": "0.2",
+    "companyHandle": "ibm"
+}
+```
+DELETE /companies/<handle>
+* General:
+    * Deletes a job from the database
+    * Authorization required: admin
+    * Request arguments: None  
+
+Sample Return:
+```json
+{
+    "deleted": 1
+}
+```
+---
+GET /users
+* General:
+    * Returns a list of all users in database
+    * Authorization required: admin
+    * Request arguments: None
+
+Sample Return:
+```json
+{
+    "users": [
+        {
+            "username": "testuser",
+            "firstName": "Chris",
+            "lastName": "Robbins",
+            "email": "chris@chris.com"
+        },
+    ]
+}
+```
+GET /users/<username>
+* General:
+    * Returns information about the user matching username
+    * Authorization required: user (logged in)
+    * A user is authorized to view info from their own account
+    * Admin may view any user's information
+
+Sample Return:
+```json
+{
+    "user": {
+        "username": "testuser",
+        "firstName": "Chris",
+        "lastName": "Robbins",
+        "isAdmin": false,
+        "jobs": [
+            1, 3, 47
+        ]
+    }
+}
+```
+POST /users
+* General:
+    * Posts a new user to the database
+    * This is not a registration endpoint: This is an admin only enpoint to manage users
+    * Authorization required: admin
+    * Request arguments: None
+    * `username`, `firstName`, `lastName`, `password`, and `email` are required
+
+Sample Request Body:
+```json
+        {
+            "username": "testuser",
+            "firstName": "Chris",
+            "lastName": "Robbins",
+            "password": "password1",
+            "email": "chris@chris.com",
+            "isAdmin": false
+        }
+```
+Sample Return:
+```json
+{
+    "user": {
+        "username": "testuser",
+        "firstName": "Chris",
+        "lastName": "Robbins",
+        "email": "chris@chris.com",
+        "isAdmin": false
+    },
+    "token": "long-bearer-token-string"
+}
+```
+PATCH /users/<username>
+* General:
+    * Updates a user in the database
+    * Authorization required: current logged in user or admin
+    * Request arguments: None
+    * `firstName`, `lastName`, `password`, and `email` may be updated
+    * one or all field may be updated in a single query
+
+Sample Request Body (each field is optional)
+```json
+{
+    "firstName": "Chris",
+    "lastName": "Robbins",
+    "password": "password1",
+    "email": "chris@chris.com"
+}
+```
+
+Sample Return:
+```json
+{
+    "user": {
+        "username": "testuser",
+        "firstName": "Chris",
+        "lastName": "Robbins",
+        "email": "chris@chris.com",
+        "isAdmin": false
+    }
+}
+```
+DELETE /users/<username>
+* General:
+    * Deletes a user from the database
+    * Authorization required: current logged in user or admin
+    * Request arguments: None  
+
+Sample Return:
+```json
+{
+    "deleted": "testuser"
+}
+POST /users/<username>/jobs/<job_id>
+* General:
+    * Posts a job application to the database
+    * Authorization required: current logged in user or admin
+    * Request arguments: None
+
+Sample Return:
+```json
+{
+    "applied": 1
+}
+```
+---

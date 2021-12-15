@@ -18,5 +18,5 @@
 		}
 	},
 	"additionalProperties": false,
-	"required": [ "title" ]
+	"required": []
 }

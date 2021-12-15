@@ -38,7 +38,7 @@ To install npm packages:
 npm i
 ```
 ---
-### Database Setup
+## Database Setup
 The project uses PostgreSQL databases
 * Create two databases: One for **testing** and one for **development**:
 ```bash
@@ -52,7 +52,7 @@ To create the database tables and seed with data, from the project directory:
 ```bash
 psql < jobly.sql
 ```
-### Running the Server
+## Running the Server
 
 Switch to the project directory  
 To run in development mode:
@@ -65,15 +65,15 @@ npm start
 ```
 ---
 
-### Environment Variables
+## Environment Variables
 Create a .env file matching the template provided in the .env.example file.  
 The SECRET_KEY= variable must be set in order to properly sign the JWTs that are used for authentication. Set this variable to a good random string. If nothing is set the config.js file falls back to a weak key suitable only for development.
 
 ---
-### Authentication and Authorization
+## Authentication and Authorization
 The project maintains a users table of registered users. Two roles are used for authentication: user and admin.
 
-#### Roles & Permissions
+### Roles & Permissions
 * Anonymous user (not logged in)  
 Can view information about companies and job listings
 * User (logged in)  
@@ -86,14 +86,14 @@ Can post/edit/delete user, company, job and application information
 
 A Bearer token must be sent in all request headers requiring logged in or higher permissions
 
-### Testing
+## Testing
 
 to run the test suite:
 ```bash
 npm test
 ```
+There is currently nearly 100% testing coverage.
 
-There is currently nearly 100% testing coverage
 ---
-API
+## API
 

@@ -88,10 +88,16 @@ A Bearer token must be sent in all request headers requiring logged in or higher
 
 ## Testing
 
-to run the test suite:
+To run the test suite:
 ```bash
 npm test
+
 ```
+To check the test-coverage of code:
+```bash
+npm coverage
+```
+
 There is currently nearly 100% testing coverage.
 
 ---

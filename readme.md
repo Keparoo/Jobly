@@ -457,6 +457,8 @@ Sample Return:
 {
     "deleted": "testuser"
 }
+```
+
 POST /users/<username>/jobs/<job_id>
 * General:
     * Posts a job application to the database

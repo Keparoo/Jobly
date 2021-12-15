@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node server.js",
 		"dev": "nodemon -e js,html,css,json server.js",
-		"test": "jest -i"
+		"test": "jest -i",
+		"coverage": "jest -i --coverage"
 	},
 	"jest": {
 		"testPathIgnorePatterns": [ "/node_modules/", "config.js" ]

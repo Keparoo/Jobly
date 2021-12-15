@@ -514,3 +514,14 @@ Sample Return:
     "token": "long-JWT-auth-token"
 }
 ```
+---
+## Error Handling
+The following errors are defined and handled in the `expressError.js` file
+* ExpressError (extending Error)
+* 404 NotFoundError
+* 401 UnauthorizedError
+* 400 BadRequestError
+* 403 ForbiddenError
+
+## Author
+Kep Kaeppeler is the author of this project and documentation

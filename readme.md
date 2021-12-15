@@ -472,3 +472,45 @@ Sample Return:
 }
 ```
 ---
+POST /auth/token
+* General:
+    * Returns a JWT token which can be used to authenticate further requests
+    * Authorization required: none
+    * Request arguments: None
+
+Sample Request Body:
+```json
+{
+    "username": "testuser",
+    "password": "password123"
+}
+```
+Sample Return:
+```json
+{
+    "token": "long-JWT-auth-token"
+}
+```
+POST /auth/register
+* General:
+    * Registers a new user in the database
+    * Authorization required: none
+    * Request arguments: None
+    * `username`, `password`, `firstName`, `lastName`, and `email` are required
+    * Returns JWT token which can be used to authenticate further requests
+Sample Request Body:
+```json
+{
+    "username": "testuser",
+    "password": "password123",
+    "firstName": "Chris",
+    "lastName": "Robbins",
+    "email": "chris@chris.com"
+}
+```
+Sample Return:
+```json
+{
+    "token": "long-JWT-auth-token"
+}
+```

@@ -117,7 +117,7 @@ GET /companies
              "description": "Big Blue",
             "numEmployees": 100000,
             "logoUrl": "http://www.ibm.com"
-         }, ...
+         },
     ]
 }
 ```
@@ -146,7 +146,7 @@ Returns:
                     "title": "Senior Developer",
                     "salary": 50000,
                     "equity": "0.2"
-                    }, ...
+                    },
                 ]
          }
 }
@@ -219,6 +219,6 @@ DELETE /companies/<handle>
 Returns:
 ```json
 {
-    "deleted: "ibm"
+    "deleted": "ibm"
 }
 ```

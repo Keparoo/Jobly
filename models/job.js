@@ -44,9 +44,15 @@ class Jobs {
    *    None, 1, 2 or all 3 three query strings may be used in a single query
    *    The queries will be combined with an AND
    *    Values of valid query strings will be validated at the route level with json-schema
+   * 
    *    jsToSql is an object listing valid query strings with an object indicating:
    *        col: name of db column name to be filtered
-   *        op: the operation to be used in the WHERE clause to filter results
+   *        op: the operation to be used in the WHERE clause to filter results:
+   * 		    const jsToSql = {
+   *		         minSalary: { col: 'salary', op: '>=' },
+   *			         hasEquity: { col: 'equity', op: '>' },
+   *			         title: { col: 'title', op: 'ILIKE' }
+   *		        }
    *    Query strings not found in jsToSql will be ignored
    *    If no valid query string is found, the search will be done unfiltered with no WHERE clause
    * 

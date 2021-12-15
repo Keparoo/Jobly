@@ -97,6 +97,10 @@ There is currently nearly 100% testing coverage.
 ---
 ## API
 
+The API is a restful API that returns json
+
+### Endpoints
+
 GET /companies
 * General:
     * Returns a list of all companies in database

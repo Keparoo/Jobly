@@ -13,8 +13,9 @@ A restful API that models a jobs database for tracking companies, jobs, and job 
 
 ## API URL
 
-- Localhost API base URL: [http://localhost:3001](http://localhost:3001)
-- This API is not currently deployed
+- Localhost API base URL: [Development Server](http://localhost:3001)
+- This API is currently deployed to: [Jobly Backend](https://kep-jobly-backend.herokuapp.com/)
+- The React Frontend is currently deployed to: [Jobly Frontend](https://hot-soap.surge.sh/)
 
 ## Getting Started
 

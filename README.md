@@ -17,6 +17,10 @@ A restful API that models a jobs database for tracking companies, jobs, and job 
 - This API is currently deployed to: [https://kep-jobly-backend.herokuapp.com/](https://kep-jobly-backend.herokuapp.com/)
 - The React Frontend is currently deployed to: [https://hot-soap.surge.sh/](https://hot-soap.surge.sh/)
 
+## Frontend Repo
+
+The repository for the React frontend is [https://github.com/Keparoo/React-Jobly](https://github.com/Keparoo/React-Jobly)
+
 ## Getting Started
 
 Clone the repo by running

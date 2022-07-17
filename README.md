@@ -13,7 +13,7 @@ A restful API that models a jobs database for tracking companies, jobs, and job 
 
 ## API URL
 
-- Localhost API base URL: http://localhost:3001
+- Localhost API base URL: [http://localhost:3001](http://localhost:3001)
 - This API is not currently deployed
 
 ## Getting Started
